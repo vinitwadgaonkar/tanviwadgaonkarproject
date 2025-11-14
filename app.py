@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import pickle
 import os
@@ -97,16 +98,55 @@ class WeatherInput(BaseModel):
     Pressure: float
 
 @app.get("/")
-def read_root():
-    return {
-        "message": "Agri Assistant API",
-        "endpoints": {
-            "crop_recommend": "/crop_recommend",
-            "yield_predict": "/yield_predict",
-            "fertilizer_recommend": "/fertilizer_recommend",
-            "weather_forecast": "/weather_forecast"
+async def read_root():
+    """Serve the main HTML page"""
+    try:
+        # Get the project root directory
+        project_root = os.path.dirname(os.path.abspath(__file__))
+        html_path = os.path.join(project_root, 'index.html')
+        
+        # Try multiple paths
+        possible_paths = [
+            html_path,
+            os.path.join(os.getcwd(), 'index.html'),
+            'index.html',
+            os.path.join(project_root, 'index.html'),
+        ]
+        
+        for path in possible_paths:
+            if os.path.exists(path):
+                return FileResponse(path, media_type='text/html')
+        
+        # If HTML not found, return error with debug info
+        return {
+            "error": "HTML file not found",
+            "debug": {
+                "project_root": project_root,
+                "current_dir": os.getcwd(),
+                "tried_paths": possible_paths,
+                "files_in_root": os.listdir(project_root) if os.path.exists(project_root) else "N/A"
+            },
+            "message": "Agri Assistant API",
+            "endpoints": {
+                "crop_recommend": "/crop_recommend",
+                "yield_predict": "/yield_predict",
+                "fertilizer_recommend": "/fertilizer_recommend",
+                "weather_forecast": "/weather_forecast"
+            }
         }
-    }
+    except Exception as e:
+        import traceback
+        return {
+            "error": str(e),
+            "traceback": traceback.format_exc(),
+            "message": "Agri Assistant API",
+            "endpoints": {
+                "crop_recommend": "/crop_recommend",
+                "yield_predict": "/yield_predict",
+                "fertilizer_recommend": "/fertilizer_recommend",
+                "weather_forecast": "/weather_forecast"
+            }
+        }
 
 @app.post("/crop_recommend")
 def crop_recommend(data: CropRecommendInput):
