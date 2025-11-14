@@ -7,3 +7,20 @@ test_*.ipynb
 *.ipynb_checkpoints
 Fertilizer_Prediction_cleaned.csv
 
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+test_*.ipynb
+*.ipynb_checkpoints/
+Crop_*.csv
+Fertilizer*.csv
+weather_*.csv
+train_models.py
+start.sh
+deploy_vercel.sh
+DEPLOY.md
+QUICK_DEPLOY.txt
+.deploy_trigger
