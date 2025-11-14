@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "🚀 Deploying to Vercel..."
+echo ""
+echo "If you have Vercel CLI installed:"
+echo "  vercel --prod"
+echo ""
+echo "Or use npx:"
+echo "  npx vercel --prod"
+echo ""
+echo "Or visit: https://vercel.com/new to deploy via dashboard"

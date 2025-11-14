@@ -1,0 +1,29 @@
+🚀 QUICK DEPLOY INSTRUCTIONS
+
+Since you have Vercel MCP connected, you can deploy in one of these ways:
+
+OPTION 1: Via Vercel Dashboard (Easiest)
+1. Go to: https://vercel.com/new
+2. Click "Import Git Repository" or drag & drop this folder
+3. Project name: tanviwadgaonkarproject
+4. Click "Deploy"
+5. You'll get a URL like: https://tanviwadgaonkarproject.vercel.app
+
+OPTION 2: Via Vercel CLI (if installed)
+Run: vercel --prod --name tanviwadgaonkarproject
+
+OPTION 3: Install Vercel CLI first
+npm i -g vercel
+Then: vercel --prod --name tanviwadgaonkarproject
+
+Your project is ready! All files are configured:
+✅ api/index.py - FastAPI app
+✅ vercel.json - Vercel config
+✅ requirements.txt - Dependencies
+✅ models/ - All ML models
+✅ index.html - Web interface (served at root)
+
+After deployment, your single webpage will be at:
+https://tanviwadgaonkarproject.vercel.app
+
+The API endpoints will work automatically!

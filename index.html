@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri Assistant API - Swagger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #fafafa;
+        }
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+        .header h1 {
+            color: #3b4151;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .header .url {
+            color: #3b4151;
+            font-size: 14px;
+            font-family: monospace;
+        }
+        .tabs {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: #3b4151;
+            font-weight: 500;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .tab:hover {
+            color: #49cc90;
+        }
+        .tab.active {
+            color: #49cc90;
+            border-bottom-color: #49cc90;
+        }
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .endpoint {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .endpoint.active {
+            display: block;
+        }
+        .endpoint-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .method {
+            background: #49cc90;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .endpoint-path {
+            font-family: monospace;
+            font-size: 18px;
+            color: #3b4151;
+        }
+        .endpoint-body {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3b4151;
+            margin-bottom: 10px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-execute {
+            background: #49cc90;
+            color: white;
+        }
+        .btn-execute:hover {
+            background: #3fb877;
+        }
+        .btn-execute:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .btn-cancel {
+            background: #f5f5f5;
+            color: #3b4151;
+        }
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            display: none;
+        }
+        .response.show {
+            display: block;
+        }
+        .response-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #3b4151;
+        }
+        .response-content {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #3b4151;
+            font-weight: 500;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #49cc90;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: #f93e3e;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Agri Assistant API - Swagger</h1>
+        <div class="url">http://127.0.0.1:8000/docs</div>
+    </div>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('crop')">Crop Recommend</div>
+        <div class="tab" onclick="switchTab('yield')">Yield Predict</div>
+        <div class="tab" onclick="switchTab('fertilizer')">Fertilizer Recommend</div>
+        <div class="tab" onclick="switchTab('weather')">Weather Forecast</div>
+    </div>
+    
+    <div class="content">
+        <!-- Crop Recommendation -->
+        <div id="crop" class="endpoint active">
+            <div class="endpoint-header">
+                <span class="method">POST</span>
+                <span class="endpoint-path">/crop_recommend</span>
+            </div>
+            <div class="endpoint-body">
+                <div class="section">
+                    <div class="section-title">Request body</div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>N (Nitrogen)</label>
+                            <input type="number" id="crop_N" value="90" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>P (Phosphorus)</label>
+                            <input type="number" id="crop_P" value="50" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>K (Potassium)</label>
+                            <input type="number" id="crop_K" value="40" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Temperature</label>
+                            <input type="number" id="crop_temp" value="25" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Humidity</label>
+                            <input type="number" id="crop_humidity" value="65" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>pH</label>
+                            <input type="number" id="crop_ph" value="6.5" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Rainfall</label>
+                            <input type="number" id="crop_rainfall" value="120" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn-execute" onclick="executeCrop()" id="crop_btn">Execute</button>
+                    <button class="btn-cancel" onclick="resetCrop()">Reset</button>
+                </div>
+                <div id="crop_response" class="response">
+                    <div class="response-title">Response</div>
+                    <div class="response-content" id="crop_response_content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Yield Prediction -->
+        <div id="yield" class="endpoint">
+            <div class="endpoint-header">
+                <span class="method">POST</span>
+                <span class="endpoint-path">/yield_predict</span>
+            </div>
+            <div class="endpoint-body">
+                <div class="section">
+                    <div class="section-title">Request body</div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Nitrogen</label>
+                            <input type="number" id="yield_N" value="90" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Phosphorus</label>
+                            <input type="number" id="yield_P" value="50" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Potassium</label>
+                            <input type="number" id="yield_K" value="40" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Temperature</label>
+                            <input type="number" id="yield_temp" value="25" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Humidity</label>
+                            <input type="number" id="yield_humidity" value="65" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>pH Value</label>
+                            <input type="number" id="yield_ph" value="6.5" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Rainfall</label>
+                            <input type="number" id="yield_rainfall" value="120" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Crop</label>
+                            <input type="text" id="yield_crop" value="Rice" list="crop_list">
+                            <datalist id="crop_list">
+                                <option value="Rice">
+                                <option value="Wheat">
+                                <option value="Maize">
+                                <option value="Cotton">
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn-execute" onclick="executeYield()" id="yield_btn">Execute</button>
+                    <button class="btn-cancel" onclick="resetYield()">Reset</button>
+                </div>
+                <div id="yield_response" class="response">
+                    <div class="response-title">Response</div>
+                    <div class="response-content" id="yield_response_content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Fertilizer Recommendation -->
+        <div id="fertilizer" class="endpoint">
+            <div class="endpoint-header">
+                <span class="method">POST</span>
+                <span class="endpoint-path">/fertilizer_recommend</span>
+            </div>
+            <div class="endpoint-body">
+                <div class="section">
+                    <div class="section-title">Request body</div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Temperature</label>
+                            <input type="number" id="fert_temp" value="26" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Humidity</label>
+                            <input type="number" id="fert_humidity" value="52" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Moisture</label>
+                            <input type="number" id="fert_moisture" value="38" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Soil Type</label>
+                            <select id="fert_soil">
+                                <option>Sandy</option>
+                                <option>Loamy</option>
+                                <option>Black</option>
+                                <option>Red</option>
+                                <option>Clayey</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Crop Type</label>
+                            <input type="text" id="fert_crop" value="Maize">
+                        </div>
+                        <div class="input-group">
+                            <label>Nitrogen</label>
+                            <input type="number" id="fert_N" value="37" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Potassium</label>
+                            <input type="number" id="fert_K" value="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Phosphorous</label>
+                            <input type="number" id="fert_P" value="0" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn-execute" onclick="executeFertilizer()" id="fert_btn">Execute</button>
+                    <button class="btn-cancel" onclick="resetFertilizer()">Reset</button>
+                </div>
+                <div id="fertilizer_response" class="response">
+                    <div class="response-title">Response</div>
+                    <div class="response-content" id="fertilizer_response_content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weather Forecast -->
+        <div id="weather" class="endpoint">
+            <div class="endpoint-header">
+                <span class="method">POST</span>
+                <span class="endpoint-path">/weather_forecast</span>
+            </div>
+            <div class="endpoint-body">
+                <div class="section">
+                    <div class="section-title">Request body</div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Temperature</label>
+                            <input type="number" id="weather_temp" value="23.72" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Humidity</label>
+                            <input type="number" id="weather_humidity" value="89.59" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Wind Speed</label>
+                            <input type="number" id="weather_wind" value="7.34" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Cloud Cover</label>
+                            <input type="number" id="weather_cloud" value="50.50" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Pressure</label>
+                            <input type="number" id="weather_pressure" value="1032.38" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn-execute" onclick="executeWeather()" id="weather_btn">Execute</button>
+                    <button class="btn-cancel" onclick="resetWeather()">Reset</button>
+                </div>
+                <div id="weather_response" class="response">
+                    <div class="response-title">Response</div>
+                    <div class="response-content" id="weather_response_content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-detect API URL (works for both local and Vercel)
+        const API_URL = window.location.origin;
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.endpoint').forEach(e => e.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        async function executeCrop() {
+            const btn = document.getElementById('crop_btn');
+            const responseDiv = document.getElementById('crop_response');
+            const contentDiv = document.getElementById('crop_response_content');
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Executing<span class="loading"></span>';
+            responseDiv.classList.remove('show');
+            
+            const data = {
+                N: parseFloat(document.getElementById('crop_N').value),
+                P: parseFloat(document.getElementById('crop_P').value),
+                K: parseFloat(document.getElementById('crop_K').value),
+                temperature: parseFloat(document.getElementById('crop_temp').value),
+                humidity: parseFloat(document.getElementById('crop_humidity').value),
+                ph: parseFloat(document.getElementById('crop_ph').value),
+                rainfall: parseFloat(document.getElementById('crop_rainfall').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/crop_recommend`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                contentDiv.textContent = JSON.stringify(result, null, 2);
+                contentDiv.className = 'response-content';
+                responseDiv.classList.add('show');
+            } catch (error) {
+                contentDiv.textContent = `Error: ${error.message}`;
+                contentDiv.className = 'response-content error';
+                responseDiv.classList.add('show');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Execute';
+            }
+        }
+        
+        async function executeYield() {
+            const btn = document.getElementById('yield_btn');
+            const responseDiv = document.getElementById('yield_response');
+            const contentDiv = document.getElementById('yield_response_content');
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Executing<span class="loading"></span>';
+            responseDiv.classList.remove('show');
+            
+            const data = {
+                Nitrogen: parseFloat(document.getElementById('yield_N').value),
+                Phosphorus: parseFloat(document.getElementById('yield_P').value),
+                Potassium: parseFloat(document.getElementById('yield_K').value),
+                Temperature: parseFloat(document.getElementById('yield_temp').value),
+                Humidity: parseFloat(document.getElementById('yield_humidity').value),
+                pH_Value: parseFloat(document.getElementById('yield_ph').value),
+                Rainfall: parseFloat(document.getElementById('yield_rainfall').value),
+                Crop: document.getElementById('yield_crop').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/yield_predict`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                contentDiv.textContent = JSON.stringify(result, null, 2);
+                contentDiv.className = 'response-content';
+                responseDiv.classList.add('show');
+            } catch (error) {
+                contentDiv.textContent = `Error: ${error.message}`;
+                contentDiv.className = 'response-content error';
+                responseDiv.classList.add('show');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Execute';
+            }
+        }
+        
+        async function executeFertilizer() {
+            const btn = document.getElementById('fert_btn');
+            const responseDiv = document.getElementById('fertilizer_response');
+            const contentDiv = document.getElementById('fertilizer_response_content');
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Executing<span class="loading"></span>';
+            responseDiv.classList.remove('show');
+            
+            const data = {
+                Temparature: parseFloat(document.getElementById('fert_temp').value),
+                Humidity: parseFloat(document.getElementById('fert_humidity').value),
+                Moisture: parseFloat(document.getElementById('fert_moisture').value),
+                Soil_Type: document.getElementById('fert_soil').value,
+                Crop_Type: document.getElementById('fert_crop').value,
+                Nitrogen: parseFloat(document.getElementById('fert_N').value),
+                Potassium: parseFloat(document.getElementById('fert_K').value),
+                Phosphorous: parseFloat(document.getElementById('fert_P').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/fertilizer_recommend`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                contentDiv.textContent = JSON.stringify(result, null, 2);
+                contentDiv.className = 'response-content';
+                responseDiv.classList.add('show');
+            } catch (error) {
+                contentDiv.textContent = `Error: ${error.message}`;
+                contentDiv.className = 'response-content error';
+                responseDiv.classList.add('show');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Execute';
+            }
+        }
+        
+        async function executeWeather() {
+            const btn = document.getElementById('weather_btn');
+            const responseDiv = document.getElementById('weather_response');
+            const contentDiv = document.getElementById('weather_response_content');
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Executing<span class="loading"></span>';
+            responseDiv.classList.remove('show');
+            
+            const data = {
+                Temperature: parseFloat(document.getElementById('weather_temp').value),
+                Humidity: parseFloat(document.getElementById('weather_humidity').value),
+                Wind_Speed: parseFloat(document.getElementById('weather_wind').value),
+                Cloud_Cover: parseFloat(document.getElementById('weather_cloud').value),
+                Pressure: parseFloat(document.getElementById('weather_pressure').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/weather_forecast`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                contentDiv.textContent = JSON.stringify(result, null, 2);
+                contentDiv.className = 'response-content';
+                responseDiv.classList.add('show');
+            } catch (error) {
+                contentDiv.textContent = `Error: ${error.message}`;
+                contentDiv.className = 'response-content error';
+                responseDiv.classList.add('show');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Execute';
+            }
+        }
+        
+        function resetCrop() {
+            document.getElementById('crop_N').value = 90;
+            document.getElementById('crop_P').value = 50;
+            document.getElementById('crop_K').value = 40;
+            document.getElementById('crop_temp').value = 25;
+            document.getElementById('crop_humidity').value = 65;
+            document.getElementById('crop_ph').value = 6.5;
+            document.getElementById('crop_rainfall').value = 120;
+            document.getElementById('crop_response').classList.remove('show');
+        }
+        
+        function resetYield() {
+            document.getElementById('yield_N').value = 90;
+            document.getElementById('yield_P').value = 50;
+            document.getElementById('yield_K').value = 40;
+            document.getElementById('yield_temp').value = 25;
+            document.getElementById('yield_humidity').value = 65;
+            document.getElementById('yield_ph').value = 6.5;
+            document.getElementById('yield_rainfall').value = 120;
+            document.getElementById('yield_crop').value = 'Rice';
+            document.getElementById('yield_response').classList.remove('show');
+        }
+        
+        function resetFertilizer() {
+            document.getElementById('fert_temp').value = 26;
+            document.getElementById('fert_humidity').value = 52;
+            document.getElementById('fert_moisture').value = 38;
+            document.getElementById('fert_soil').value = 'Sandy';
+            document.getElementById('fert_crop').value = 'Maize';
+            document.getElementById('fert_N').value = 37;
+            document.getElementById('fert_K').value = 0;
+            document.getElementById('fert_P').value = 0;
+            document.getElementById('fertilizer_response').classList.remove('show');
+        }
+        
+        function resetWeather() {
+            document.getElementById('weather_temp').value = 23.72;
+            document.getElementById('weather_humidity').value = 89.59;
+            document.getElementById('weather_wind').value = 7.34;
+            document.getElementById('weather_cloud').value = 50.50;
+            document.getElementById('weather_pressure').value = 1032.38;
+            document.getElementById('weather_response').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
+
